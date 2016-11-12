@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block content %}
+  <div class="jumbo">
+    <h2>Profile<h2>
+    <h3>This is {{ session['email'] }}'s profile page<h3>
+    <h3>This is {{ user.firstname }}'s profile page<h3>
+        <p>{% if session['anon'] %}
+            {{ user.lastname }}
+            {% endif %}
+        </p>
+
+
+
+  </div>
+{% endblock %}

@@ -1,0 +1,45 @@
+<html>
+  <head>
+    {% if title %}
+    <title>{{ title }} - PepTalk</title>
+    {% else %}
+    <title>Welcome to PepTalk</title>
+    {% endif %}
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  </head>
+  <body>
+  <header>
+    <div class="container">
+      {% if 'email' in session %}
+      <h1 class="logo"><a href="/profile">Peptalk: Home</a></h1>
+      {% else %}
+      <h1 class="logo"><a href="/index">Peptalk</a></h1>
+      {% endif %}
+      <nav>
+        <ul class="menu">
+          {% if 'email' in session %}
+          <li><a href="{{ url_for('profile') }}">Profile</a></li>
+          <li><a href="{{ url_for('logout') }}">Log Out</a></li>
+          {% else %}
+          <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
+          <li><a href="{{ url_for('login') }}">Log In</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </header>
+  {% with messages = get_flashed_messages() %} 
+    {% if messages %}
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+ 
+    <div class="container">
+      {% block content %}
+      {% endblock %}
+    </div>
+  </body>
+</html>
