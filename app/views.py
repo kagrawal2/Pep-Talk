@@ -1,8 +1,9 @@
 from flask import render_template, flash, redirect, request, session, url_for
 from app import app, db
-from .forms import LoginForm, SignupForm, AnonForm, AnonLogin
-from .models import User#, AnonUser
+from .forms import LoginForm, SignupForm, AnonForm, AnonLogin, GoalForm
+from .models import User, Goal
 from werkzeug import generate_password_hash
+from datetime import datetime
 # from sqlalchemy import func
 
 # @app.before_request
@@ -12,23 +13,102 @@ from werkzeug import generate_password_hash
 
 """Profile and App Handling"""
 
-@app.route('/profile')
-def profile():
+def getCurrentUser():
     if 'email' not in session:
-        return redirect(url_for('login'))
+        return None
+
     elif session['email'] == 'anon':
         # user = AnonUser.query.filter_by(anonid = session['anon']).first()
         user = User.query.filter_by(firstname = 'anon').filter_by(lastname = session['anon']).first()
     else:
         user = User.query.filter_by(email = session['email']).first()
 
+    return user
+
+@app.route('/profile', methods = ['GET', 'POST'])
+def profile():
+    user = getCurrentUser()
+    if user == None:
+        return redirect(url_for('login'))
+
     if user is None:
         return redirect(url_for('login'))
     else:
-        return render_template('profile.html', user = user, title='Home')
+        form = GoalForm()
+        goals = user.getGoals()
+        
+        return render_template('profile.html', user = user, title='Home', form = form, goals = goals)
+
+"""Server Side Goal Handling"""
+
+@app.route('/createGoal', methods = ['GET','POST'])
+def createGoal():
+    user = getCurrentUser()
+    if user == None:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        form = GoalForm()
+        if form.validate():
+            #form.youtubeURL.data.split('v=')[-1]
+            youtube = "YinkbnaBgIk"
+            goal = Goal(title = form.title.data, timestamp = datetime.utcnow(), user_id = user.id, description = form.description.data, youtubeURL = youtube)
+            db.session.add(goal)
+            db.session.commit()
+            return redirect(url_for('profile'))
+
+    return redirect(url_for('profile'))
+
+@app.route('/editGoal/<int:id>', methods = ['GET','POST'])
+def editGoal(id):
+    user = getCurrentUser()
+    if user == None:
+        return redirect(url_for('login'))
+
+    editableGoal = Goal.query.filter_by(id = id).first()
+
+    if editableGoal != None:
+        if editableGoal.user_id != user.id:
+            flash('You cannot edit this post')
+            redirect(url_for('profile'))
+        else:
+            goals = user.getGoals()
+            form = GoalForm(obj = editableGoal)
+            form.populate_obj(editableGoal)
+            #Change to add Goal instead of in profile
+            if request.method == 'POST':
+                if form.validate():
+                    editableGoal.title = form.title.data
+                    editableGoal.description = form.description.data
+                    # editableGoal.youtubeURL = form.youtubeURL.data
+                    editableGoal.youtubeURL = "YinkbnaBgIk"
+                    db.session.commit()
+                    return redirect(url_for('profile'))
+
+        return render_template('editGoal.html', form = form, editableGoal = editableGoal)
+        #return render_template('profile.html', user = user, title='Home', form = form, goals = goals, editableGoal = editableGoal)
+
+    return redirect(url_for('profile'))
+
+@app.route('/deleteGoal/<int:id>', methods = ['GET'])
+def deleteGoal(id):
+    user = getCurrentUser()
+    if user == None:
+        return redirect(url_for('login'))
+
+    editableGoal = Goal.query.filter_by(id = id).first()
+
+    if editableGoal != None:
+        if editableGoal.user_id != user.id:
+            flash('You cannot delete this goal')
+        else:
+            db.session.delete(editableGoal)
+            db.session.commit()
+    return redirect(url_for('profile'))
 
 
 """ Regular Sign up and Login Routing"""
+
 @app.route('/')
 @app.route('/index')
 def index():
@@ -75,8 +155,8 @@ def login():
     elif request.method == 'GET':
         return render_template('login.html', form = form, anonLoginForm = anonForm)
 
-"""Anonymous Sign Up and Login Routing"""
 
+"""Anonymous Sign Up and Login Routing"""
 
 @app.route('/anonSignup', methods = ['GET', 'POST'])
 def anonSignup():
@@ -122,6 +202,7 @@ def anonLogin():
                 session['anon'] = anonLoginForm.anonIdLogin.data
 
             return redirect(url_for('profile'))
+
 
 """Logout Routing"""
 

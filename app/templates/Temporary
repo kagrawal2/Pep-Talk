@@ -1,0 +1,22 @@
+Temporary
+{% if editableGoal %}
+  <form action = "{{ url_for('editGoal', id = editableGoal.id ) }}" method = post>
+  {% else %}
+  <form action = "{{ url_for('createGoal') }}" method = post>
+  {% endif %}
+
+    {{ form.hidden_tag() }}
+
+    {{ form.title.label }}
+    {{ form.title(size = 30, maxlength = 100) }}
+
+    {% for error in form.title.errors %}
+      <span style='color: red;'>[{{ error }}]</span> <br>
+    {% endfor %}
+
+    
+    {% if editableGoal %}
+    <input type = 'submit' value = 'Edit Goal'>
+    {% else %}
+    <input type = 'submit' value = 'Add Goal'>
+    {% endif %}

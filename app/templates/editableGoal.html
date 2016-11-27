@@ -1,0 +1,15 @@
+
+  <form action = "{{ url_for('editGoal', id = editableGoal.id ) }}" method = post>
+
+  {{ form.hidden_tag() }}
+
+  {{ form.title.label }}
+  {{ form.title(size = 30, maxlength = 100) }}
+
+  {% for error in form.title.errors %}
+    <span style='color: red;'>[{{ error }}]</span> <br>
+  {% endfor %}
+
+  <input type = 'submit' value = 'Edit Goal'>
+
+  </form>

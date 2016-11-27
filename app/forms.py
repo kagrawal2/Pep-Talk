@@ -1,13 +1,8 @@
 from flask.ext.wtf import FlaskForm
 from wtforms import StringField, BooleanField, TextField, TextAreaField, SubmitField, validators, ValidationError, PasswordField
-from wtforms.validators import DataRequired
-from .models import User#, AnonUser
+from wtforms.validators import DataRequired, Optional
+from .models import User, Goal
 from app import app, db
-
-# class LoginForm(FlaskForm):
-#     username = StringField('username', validators = [DataRequired()])
-#     # password = StringField('password', validators = [DataRequired()])
-#     remember_me = BooleanField('remember_me', default = False)
 
 
 class SignupForm(FlaskForm):
@@ -75,5 +70,17 @@ class AnonLogin(FlaskForm):
     else:
       self.anonIdLogin.errors.append('Invalid Anonymous Login ID')
       return False
+
+
+class GoalForm(FlaskForm):
+  title = StringField('Enter Goal', validators = [DataRequired()])
+  description = StringField('Enter a Short Description', validators = [Optional()])
+  youtubeURL = StringField('Enter a Youtube Link', validators = [Optional()])
+
+  def __init__(self, *args, **kwargs):
+    FlaskForm.__init__(self, *args, **kwargs)
+
+
+
 
 

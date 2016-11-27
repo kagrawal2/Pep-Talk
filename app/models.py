@@ -7,6 +7,7 @@ class User(db.Model):
     lastname = db.Column(db.String(100))
     email = db.Column(db.String(120), index = True, unique = True)
     pwdhash = db.Column(db.String(54))
+    goals = db.relationship('Goal', backref = 'author', lazy='dynamic')
 
     def __init__(self, firstname, lastname, email, password):
         self.firstname = firstname
@@ -20,10 +21,32 @@ class User(db.Model):
     def check_password(self, password):
         return check_password_hash(self.pwdhash, password)
 
+    def getGoals(self):
+        return Goal.query.filter_by(user_id = self.id).order_by(Goal.timestamp.desc())
+
     def __repr__(self):
         return '<User {}>'.format(self.lastname)
 
-# class AnonUser(db.Model):
+class Goal(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    title = db.Column(db.String(150))
+    description = db.Column(db.String(300))
+    youtubeURL = db.Column(db.String(150))
+
+    timestamp = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def __init__(self, title, timestamp, user_id, description, youtubeURL):
+        self.title = title
+        self.timestamp = timestamp
+        self.user_id = user_id
+        self.description = description
+        self.youtubeURL = youtubeURL
+
+    def __repr__(self):
+        return '<Goal {}>'.format(self.title)
+
+# class AnonUser(db.Model):å
 #     id = db.Column(db.Integer, primary_key = True)
 #     anonid = db.Column(db.String(54), index = True, unique = True)
 
