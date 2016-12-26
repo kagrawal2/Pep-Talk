@@ -75,7 +75,7 @@ class AnonLogin(FlaskForm):
 class GoalForm(FlaskForm):
   title = StringField('Enter Goal', validators = [DataRequired()])
   description = StringField('Enter a Short Description', validators = [Optional()])
-  youtubeURL = StringField('Enter a Youtube Link', validators = [Optional()])
+  youtubeURL = StringField('Search or Enter a Youtube Link', validators = [Optional()])
 
   def __init__(self, *args, **kwargs):
     FlaskForm.__init__(self, *args, **kwargs)

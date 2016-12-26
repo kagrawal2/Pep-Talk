@@ -1,7 +1,30 @@
 {% extends 'layout.html' %}
 {% block content %}
-    <h1>Hi, This is a Demo </h1>
-    <p> How are you today? </p>
+    <h2>What is PepTalk?</h2>
+    <p>PepTalk is a card style application designed to add encouragement for your longterm goals and resolutions.
+    </p>
+
+
+    <p> Using your goal and description we suggest multimedia like videos from YouTube, encouraging and relevant quotes, and music, PepTalk reminds you to get your goals done in a more stimulating and encouraging way.
+    </p>
+
+
+    <p>
+        For a test trial we also offer an Anonymous Demo mode, in which your data will be deleted after a week of inactivity.
+    </p>
+
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-12" style="text-align: center">
+                <h2>Try it out!</h2>
+                <form action="{{ url_for('signup') }}">
+                    <input type="submit" value="Sign Up!" />
+                </form>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
 
 

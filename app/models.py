@@ -22,7 +22,7 @@ class User(db.Model):
         return check_password_hash(self.pwdhash, password)
 
     def getGoals(self):
-        return Goal.query.filter_by(user_id = self.id).order_by(Goal.timestamp.desc())
+        return Goal.query.filter_by(user_id = self.id).order_by(Goal.order.asc())
 
     def __repr__(self):
         return '<User {}>'.format(self.lastname)
@@ -32,16 +32,18 @@ class Goal(db.Model):
     title = db.Column(db.String(150))
     description = db.Column(db.String(300))
     youtubeURL = db.Column(db.String(150))
+    order = db.Column(db.Integer)
 
     timestamp = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, title, timestamp, user_id, description, youtubeURL):
+    def __init__(self, title, timestamp, user_id, description, youtubeURL, order):
         self.title = title
         self.timestamp = timestamp
         self.user_id = user_id
         self.description = description
         self.youtubeURL = youtubeURL
+        self.order = order
 
     def __repr__(self):
         return '<Goal {}>'.format(self.title)

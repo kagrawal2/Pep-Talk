@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <h2> Log In </h2>
+    <h2> Login </h2>
+    <br>
     
     {% for message in form.email.errors %}
         <div class='flash'> {{ message }} </div>
@@ -14,30 +15,60 @@
     {% for message in anonLoginForm.anonIdLogin.errors %}
         <div class="flash">{{ message }}</div>
     {% endfor %}
+
    
-    <form action="{{ url_for('login') }}" method = post>
-        {{ form.hidden_tag() }}
-         
-        {{ form.email.label }}
-        {{ form.email }}
-         
-        {{ form.password.label }}
-        {{ form.password }}
-         
-        {{ form.submit }}
-    </form>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-5 col-md-5">
+                <p>Use your Awesome Account login info</p>
+                <form action="{{ url_for('login') }}" method = post>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row">
+                        <div class="col-xs-12 col-md-12">
+                            {{ form.email.label }}
+                            {{ form.email }}
+                        </div>
+                    </div>
+                     
+                    <div class="row">
+                        <div class="col-xs-12 col-md-12">
+                            {{ form.password.label }}
+                            {{ form.password }}
+                        </div>
+                    </div>
+                     
+                    {{ form.submit }}
+                </form>
 
-     <form action="{{ url_for('anonLogin') }}" method = post>
-        {{ anonLoginForm.hidden_tag() }}
+            </div>
+            
+            <div class="col-xs-2 col-md-2">
+                <h4> OR </h4>
+            </div>
 
-        {{ anonLoginForm.anonIdLogin.label }}
-        {{ anonLoginForm.anonIdLogin }}
+            <div class="col-xs-5 col-md-5">
+                <p>Use your Anonymous ID, given during signup</p>
+                 <form action="{{ url_for('anonLogin') }}" method = post>
+                    {{ anonLoginForm.hidden_tag() }}
 
-        {{ anonLoginForm.submit }}
-    </form>
-     
-     <form action="{{ url_for('signup') }}">
-        <input type="submit" value="Sign Up!" />
-    </form>
+                    {{ anonLoginForm.anonIdLogin.label }}
+                    {{ anonLoginForm.anonIdLogin }}
+
+                    {{ anonLoginForm.submit }}
+                </form>
+            </div>
+         </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-12" style="text-align: center">
+                <form action="{{ url_for('signup') }}">
+                    <input type="submit" value="Sign Up!" />
+                </form>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

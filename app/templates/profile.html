@@ -1,41 +1,193 @@
 {% extends "layout.html" %}
 {% block content %}
   
+  <div class="container">
+        <div class="row">
+            <div class="col-xs-6 col-md-6">
+              {% include 'createGoal.html' %}
+            </div>
 
-  {% include 'createGoal.html' %}
+            <div class="col-xs-5 col-md-5">
+              <br>
+              <br>
+                <!-- <h4>{{ session['email'] }}</h4> -->
+                <h4>Welcome {{ user.firstname }}!</h4>
+                    
+                      {% if session['anon'] %}
+                        <p>
+                        Your Anonymous ID is:
+                        </p>
+                        
+                        <p style="font-size: 75%"><small>
+                        {{ user.lastname }} <!-- Storage of Anonymous ID CLick to Copy to clipboard with JS-->
+                        </small></p>
+                      {% endif %}
+            </div>
+        </div>
+  </div>
 
   </form>
 
+  <div class="cardContainer" >
+    <h1> Your Goals </h1>
   {% for goal in goals %}
-  <p>
-    <b> {{ goal.title }} </b>
-    <p> {{ goal.description }} </p>
-    {% if goal.youtubeURL %}
-      <div class="youtube-player" data-id="{{ goal.youtubeURL }}"></div>
-    {% endif %}
+                <div class="goalCard" draggable="true">
+                  <div class= 'insideCard' id = "{{ goal.id }}">
+                  
+                    <h3> {{ goal.title }} </h3>
+                    <!-- <p onclick="showDescription( '{{ goal.description }}' )">More...</p> -->
 
-    {% if goal.user_id == user.id %}
-      <a href = "{{ url_for('editGoal', id = goal.id ) }}"> Edit </a>
+                    {% if goal.youtubeURL %}
+                      <div class="youtube-player" data-id="{{ goal.youtubeURL }}"></div>
+                    {% endif %}
 
-      <a href = "{{ url_for('deleteGoal', id = goal.id ) }}"> Delete </a>
-    {% endif %}
-  </p>
+                    {% if goal.user_id == user.id %}
+                      <a href = "{{ url_for('editGoal', id = goal.id ) }}"> Edit </a>
+
+
+                      <a href = "{{ url_for('deleteGoal', id = goal.id ) }}"> Delete </a>
+                    {% endif %}
+                  
+
+                  <!-- Trigger/Open The Modal -->
+                    <button id="Btn{{ goal.id }}" onclick="showModal({{ goal.id }}, 0)">More Info</button>
+
+                   <!-- The Modal -->
+                    <div id="Modal{{ goal.id }}" class="modal">
+                                          <!-- Modal content -->
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <span class="close{{ goal.id }} close">&times;</span>
+                          <h2>{{ goal.title }}</h2>
+                        </div>
+                        {% if goal.description %}
+                        <div class="modal-body">
+                          <p>{{ goal.description }}</p>
+                        </div>
+                        {% endif %}
+                        <div class="modal-footer">
+                          <h3>Just keep swimming</h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+  
   {% endfor %}
-
-  <div class="jumbo">
-    <h2>Profile<h2>
-    <h3>This is {{ session['email'] }}'s profile page<h3>
-    <h3>This is {{ user.firstname }}'s profile page<h3>
-        <p>{% if session['anon'] %}
-            {{ user.lastname }}
-            {% endif %}
-        </p>
   </div>
 
+
+
+  <style>
+    .goalCard.over {
+      border: 2px dashed #000;
+    }
+  </style>
   <script>
- 
-    /* Light YouTube Embeds by @labnol */
-    /* Web: http://labnol.org/?p=27941 */
+
+    function showModal(id, count){
+      var modal = document.getElementById('Modal'.concat(id));
+      var btn = document.getElementById("Btn".concat(id));
+      var span = document.getElementsByClassName("close".concat(id))[0];
+      btn.onclick = function() {
+          modal.style.display = "block";
+      }
+      if (count == 0) {
+        modal.style.display = "block";
+      }
+      span.onclick = function() {
+          modal.style.display = "none";
+      }
+      window.onclick = function(event) {
+          if (event.target == modal) {
+              modal.style.display = "none";
+          }
+      }
+    }
+
+
+    // function showDescription(text) {
+    //   alert(text);
+    // }
+
+    var dragSrcEl = null;
+
+    function updateGoalOrder() {
+        var order = new Array();
+        var cards = document.querySelectorAll( '.goalCard' );
+          [].forEach.call(cards, function (card) {
+            c = card.getElementsByClassName('insideCard')[0];
+            order.push(c.id);
+        });
+        var orderData = { values : order};
+        console.log(orderData);
+        
+        $.ajax({
+            type : "POST",
+            url : "{{ url_for('updateGoalOrder') }}",
+            data: JSON.stringify(orderData, null, '\t'),
+            contentType: 'application/json;charset=UTF-8',
+            success: function(result) {
+                console.log(result);
+            }
+        });
+    }
+
+    function handleDragStart(e) {
+      this.style.opacity = '0.4';
+
+      dragSrcEl = this;
+
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/html', this.innerHTML);
+    }
+
+    function handleDragOver(e) {
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
+      e.dataTransfer.dropEffect = 'move';
+      return false;
+    }
+
+    function handleDragEnter(e) {
+      this.classList.add('over');
+    }
+
+    function handleDragLeave(e) {
+      this.classList.remove('over');
+    }
+
+    function handleDrop(e) {
+      if (e.stopPropagation) {
+        e.stopPropagation(); 
+      }
+      if (dragSrcEl != this) {
+        dragSrcEl.innerHTML = this.innerHTML;
+        this.innerHTML = e.dataTransfer.getData('text/html');
+        updateGoalOrder();
+      }
+
+      return false;
+    }
+
+    function handleDragEnd(e) {
+      [].forEach.call(goalCards, function (card) {
+        card.classList.remove('over');
+      });
+      this.style.opacity = '1.0';
+    }
+
+    var goalCards = document.querySelectorAll( '.goalCard' );
+    [].forEach.call(goalCards, function(card) {
+      card.addEventListener('dragstart', handleDragStart, false);
+      card.addEventListener('dragenter', handleDragEnter, false);
+      card.addEventListener('dragover', handleDragOver, false);
+      card.addEventListener('dragleave', handleDragLeave, false);
+      card.addEventListener('drop', handleDrop, false);
+      card.addEventListener('dragend', handleDragEnd, false);
+    });
+
  
     document.addEventListener("DOMContentLoaded",
         function() {
@@ -63,8 +215,7 @@
         iframe.setAttribute("frameborder", "0");
         iframe.setAttribute("allowfullscreen", "1");
         this.parentNode.replaceChild(iframe, this);
-    }
- 
+    } 
 </script>
 
 {% endblock %}

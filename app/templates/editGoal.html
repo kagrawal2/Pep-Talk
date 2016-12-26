@@ -1,39 +1,49 @@
 {% extends "layout.html" %}
 {% block content %}
   
-<h2> Edit Goal </h2>
+<div class="container">
+  <div class="row">
+    <div class="col-xs-7 col-md-7">
+    <h2>Edit Goal</h2>
 
-  {% for error in form.title.errors %}
-    <span style='color: red;'>[{{ error }}]</span> <br>
-  {% endfor %}
+      {% for error in form.title.errors %}
+        <span style='color: red;'>[{{ error }}]</span> <br>
+      {% endfor %}
 
-  {% for error in form.description.errors %}
-    <span style='color: red;'>[{{ error }}]</span> <br>
-  {% endfor %}
+      {% for error in form.description.errors %}
+        <span style='color: red;'>[{{ error }}]</span> <br>
+      {% endfor %}
 
-  {% for error in form.youtubeURL.errors %}
-    <span style='color: red;'>[{{ error }}]</span> <br>
-  {% endfor %}
+      {% for error in form.youtubeURL.errors %}
+        <span style='color: red;'>[{{ error }}]</span> <br>
+      {% endfor %}
 
 
-  <form action = "{{ url_for('editGoal', id = editableGoal.id ) }}" method = post>
+      <form action = "{{ url_for('editGoal', id = editableGoal.id ) }}" method = post>
 
-  {{ form.hidden_tag() }}
+      {{ form.hidden_tag() }}
 
-  {{ form.title.label }}
-  {{ form.title }}
+      {{ form.title.label }}
+      {{ form.title }}
 
-  {{ form.description.label }}
-  {{ form.description }}
+      {{ form.description.label }}
+      {{ form.description }}
 
-  {{ form.youtubeURL.label }}
-  {{ form.youtubeURL }}
-  <p>
-  <input type = 'submit' value = 'Edit Goal'>
-  </p>
-  </form>
-  <form action= "{{ url_for('deleteGoal', id = editableGoal.id ) }}">
-    <input type="submit" value="Delete">
-  </form>
+      {{ form.youtubeURL.label }}
+      {{ form.youtubeURL }}
+      <p>
+      <input type = 'submit' value = 'Edit Goal'>
+      </p>
+      </form>
+      <br>
+      <form action= "{{ url_for('deleteGoal', id = editableGoal.id ) }}">
+        <input type="submit" value="Delete Goal">
+      </form>
+      <form action= "{{ url_for('profile') }}">
+        <input type="submit" value="Return to Profile">
+      </form>
 
+    </div>
+  </div>
+</div>
 {% endblock %}

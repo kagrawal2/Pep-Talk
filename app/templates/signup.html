@@ -2,7 +2,7 @@
  
 {% block content %}
   <h2>Sign Up for the Beta</h2>
- 
+  <br>
   {% for message in form.firstname.errors %}
     <div class="flash">{{ message }}</div>
   {% endfor %}
@@ -19,27 +19,60 @@
     <div class="flash">{{ message }}</div>
   {% endfor %}
    
-  <form action="{{ url_for('signup') }}" method=post>
-    {{ form.hidden_tag() }}
-     
-    {{ form.firstname.label }}
-    {{ form.firstname }}
-     
-    {{ form.lastname.label }}
-    {{ form.lastname }}
-     
-    {{ form.email.label }}
-    {{ form.email }}
-     
-    {{ form.password.label }}
-    {{ form.password }}
-     
-    {{ form.submit }}
-  </form>
 
-  <form action="{{ url_for('anonSignup') }}" method=post>
-    {{ anonForm.hidden_tag() }}
-    {{ anonForm.submit }}
-  </form>
+  <div class="container">
+    <div class="row">
+            <div class="col-xs-5 col-md-5">
+              <form action="{{ url_for('signup') }}" method=post>
+                {{ form.hidden_tag() }}
+                 
+                <div class="row">
+                  <div class="col-xs-12 col-md-12">
+                    {{ form.firstname.label }}
+                    {{ form.firstname }}
+                  </div>
+                </div>
+                 
+                <div class="row">
+                  <div class="col-xs-12 col-md-12">
+                    {{ form.lastname.label }}
+                    {{ form.lastname }}
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-xs-12 col-md-12">
+                    {{ form.email.label }}
+                    {{ form.email }}
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-xs-12 col-md-12">
+                    {{ form.password.label }}
+                    {{ form.password }}
+                  </div>
+                </div>
+                 
+                {{ form.submit }}
+              </form>
+          </div>
+          
+          <div class="col-xs-2 col-md-2">
+              <br>
+                <h4> OR </h4>
+          </div>
+
+          <div class="col-xs-5 col-md-5">
+              <br>
+              <br>
+              <form action="{{ url_for('anonSignup') }}" method=post>
+                {{ anonForm.hidden_tag() }}
+                {{ anonForm.submit }}
+              </form>
+          </div>
+    </div>
+  </div>
+  
      
 {% endblock %}

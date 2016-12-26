@@ -1,17 +1,77 @@
-from flask import render_template, flash, redirect, request, session, url_for
+from flask import render_template, flash, redirect, request, session, url_for, jsonify
 from app import app, db
 from .forms import LoginForm, SignupForm, AnonForm, AnonLogin, GoalForm
 from .models import User, Goal
+from .quoteManager import Forismatic
 from werkzeug import generate_password_hash
+
 from datetime import datetime
-# from sqlalchemy import func
+import urllib.request
+import urllib.parse
+import re
 
 # @app.before_request
 # def before_request():
 #     if 'email' in session:
 #         g.user = User.query.filter_by(email = session['email']).first()
 
-"""Profile and App Handling"""
+
+def suggestVideo(title, description):
+    """
+    These will be the randomized client side-generated videos for users who have not entered
+    a youtubeURL/search for a video. It will later be saved for future references.
+
+    youtubeAPI search. integrate youtubeAPI with nltk package called on the title and description...
+    Learn from the title and description and then offer new content ID to clientside JS to render.
+    """
+    
+    query_string = urllib.parse.urlencode({"search_query" : input()})
+    html_content = urllib.request.urlopen("http://www.youtube.com/results?" + query_string)
+    search_results = re.findall(r'href=\"\/watch\?v=(.{11})', html_content.read().decode())
+    print("http://www.youtube.com/watch?v=" + search_results[0])
+    return
+
+
+
+
+f = Forismatic()
+
+def getQuote():
+
+
+def suggestQuote(title, description, count=0):
+    """
+    Using a quotes database, relationship between title, description : quote and author
+    """
+    quote = f.get_quote()
+    if quote is not None:
+        return q
+    else:
+        return suggestQuote(title, description, count += 1)
+
+    # print(q.quote, q.author)
+    # return 
+
+def suggestMusic(title, description):
+    """
+    DFT on music, cluster into different groups with k-means
+    OR
+    Dataset of song with genre, then find a relationship with supervised title and description
+    """
+    return
+
+def suggestImage(title, description):
+    """
+    Use OpenCV or Google Vision to match the title & description to first 10 returned items from a 
+    google image search (Custom Google Search Engine) of the title
+
+    OR against a db of stock images.
+    """
+    return
+
+
+
+"""Profile and Current User Handling"""
 
 def getCurrentUser():
     if 'email' not in session:
@@ -36,10 +96,29 @@ def profile():
     else:
         form = GoalForm()
         goals = user.getGoals()
-        
+        #AJAX on Client will call the suggestion code, which will return the random quote/image/music
+        #from the suggestions above ^^.
         return render_template('profile.html', user = user, title='Home', form = form, goals = goals)
 
+
+
 """Server Side Goal Handling"""
+
+@app.route('/updateGoalOrder', methods = ['POST'])
+def updateGoalOrder():
+    goalOrder = request.get_json(silent=True)['values']
+    user = getCurrentUser()
+    if user == None:
+        return redirect(url_for('login'))
+
+    for i in range(len(goalOrder)):
+        goal = Goal.query.filter_by(user_id = user.id).filter_by(id = int(goalOrder[i])).first()
+        goal.order = i
+        db.session.commit()
+
+    return jsonify({ 'response': 'success' })
+
+
 
 @app.route('/createGoal', methods = ['GET','POST'])
 def createGoal():
@@ -51,11 +130,28 @@ def createGoal():
         form = GoalForm()
         if form.validate():
             #form.youtubeURL.data.split('v=')[-1]
-            youtube = "YinkbnaBgIk"
-            goal = Goal(title = form.title.data, timestamp = datetime.utcnow(), user_id = user.id, description = form.description.data, youtubeURL = youtube)
+            #"YinkbnaBgIk"
+            #Process the string (either search YouTube and return first result or split and save)
+            if 'www.youtube' in form.youtubeURL.data:
+                youtube = str(form.youtubeURL.data.split('v=')[-1])
+            else:
+                # youtube = youtubeAPI for the first search result ID
+                youtube = "YinkbnaBgIk"
+
+            try: 
+                prevGoal = Goal.query.filter_by(user_id = user.id).order_by(Goal.order.desc()).first().order
+                prevGoal = prevGoal + 1
+            except:
+                prevGoal = 0
+
+            goal = Goal(title = form.title.data, timestamp = datetime.utcnow(),
+                user_id = user.id, description = form.description.data,
+                youtubeURL = youtube, order = prevGoal)
             db.session.add(goal)
             db.session.commit()
             return redirect(url_for('profile'))
+
+        flash('There was an error in your goal')
 
     return redirect(url_for('profile'))
 
@@ -72,7 +168,7 @@ def editGoal(id):
             flash('You cannot edit this post')
             redirect(url_for('profile'))
         else:
-            goals = user.getGoals()
+            goals = user.getGoals() #Should do something with this?
             form = GoalForm(obj = editableGoal)
             form.populate_obj(editableGoal)
             #Change to add Goal instead of in profile
@@ -81,7 +177,15 @@ def editGoal(id):
                     editableGoal.title = form.title.data
                     editableGoal.description = form.description.data
                     # editableGoal.youtubeURL = form.youtubeURL.data
-                    editableGoal.youtubeURL = "YinkbnaBgIk"
+                    #Process the string (either search YouTube and reutnr first result or split and save)
+                    editableGoal.youtubeURL = str(form.youtubeURL.data.split('v=')[-1])
+                        
+                    if 'www.youtube' in form.youtubeURL.data:
+                        editableGoal.youtubeURL = str(form.youtubeURL.data.split('v=')[-1])
+                    else:
+                        # youtube = youtubeAPI for the first search result ID
+                        editableGoal.youtubeURL = "YinkbnaBgIk"
+
                     db.session.commit()
                     return redirect(url_for('profile'))
 
@@ -212,6 +316,7 @@ def logout():
         return redirect(url_for('login'))
 
     session.pop('email', None)
+    session.pop('anon', None)
     return redirect(url_for('index'))
 
 
