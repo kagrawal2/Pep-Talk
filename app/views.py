@@ -9,14 +9,12 @@ from datetime import datetime
 import urllib.request
 import urllib.parse
 import re
-
-# @app.before_request
-# def before_request():
-#     if 'email' in session:
-#         g.user = User.query.filter_by(email = session['email']).first()
+from random import randint
 
 
-def suggestVideo(title, description):
+
+
+def suggestVideo(title, description, num):
     """
     These will be the randomized client side-generated videos for users who have not entered
     a youtubeURL/search for a video. It will later be saved for future references.
@@ -24,30 +22,28 @@ def suggestVideo(title, description):
     youtubeAPI search. integrate youtubeAPI with nltk package called on the title and description...
     Learn from the title and description and then offer new content ID to clientside JS to render.
     """
-    
-    query_string = urllib.parse.urlencode({"search_query" : input()})
+
+    query_string = urllib.parse.urlencode({"search_query" : title + ' motivation'})
     html_content = urllib.request.urlopen("http://www.youtube.com/results?" + query_string)
     search_results = re.findall(r'href=\"\/watch\?v=(.{11})', html_content.read().decode())
-    print("http://www.youtube.com/watch?v=" + search_results[0])
-    return
+    # print("http://www.youtube.com/watch?v=" + search_results[0])
+    return search_results[num]
 
 
-
-
-f = Forismatic()
-
-def getQuote():
-
-
+f = Forismatic() #connect to the Forismatic API with the quotemanager import
 def suggestQuote(title, description, count=0):
     """
     Using a quotes database, relationship between title, description : quote and author
     """
     quote = f.get_quote()
-    if quote is not None:
-        return q
+    if quote is not None and len(quote.quote + quote.author) < 201:
+        return { 'q' : quote.quote, 'author' : quote.author }
     else:
-        return suggestQuote(title, description, count += 1)
+        if count < 10:
+            count += 1
+            return suggestQuote(title, description, count)
+        else:
+            return { 'q' : "The only person you are destined to become is the person you decide to be.", 'author' : "Ralph Waldo Emerson" }
 
     # print(q.quote, q.author)
     # return 
@@ -96,9 +92,10 @@ def profile():
     else:
         form = GoalForm()
         goals = user.getGoals()
+        dailyQuote = suggestQuote("", "", 0)
         #AJAX on Client will call the suggestion code, which will return the random quote/image/music
         #from the suggestions above ^^.
-        return render_template('profile.html', user = user, title='Home', form = form, goals = goals)
+        return render_template('profile.html', user = user, title='Home', form = form, goals = goals, dailyQuote = dailyQuote)
 
 
 
@@ -135,18 +132,20 @@ def createGoal():
             if 'www.youtube' in form.youtubeURL.data:
                 youtube = str(form.youtubeURL.data.split('v=')[-1])
             else:
-                # youtube = youtubeAPI for the first search result ID
-                youtube = "YinkbnaBgIk"
+                try:
+                    youtube = suggestVideo(form.title.data, '', randint(0,5))
+                except:
+                    youtube = "YinkbnaBgIk"
 
             try: 
                 prevGoal = Goal.query.filter_by(user_id = user.id).order_by(Goal.order.desc()).first().order
-                prevGoal = prevGoal + 1
+                index = prevGoal + 1
             except:
-                prevGoal = 0
+                index = 0
 
             goal = Goal(title = form.title.data, timestamp = datetime.utcnow(),
                 user_id = user.id, description = form.description.data,
-                youtubeURL = youtube, order = prevGoal)
+                youtubeURL = youtube, order = index)
             db.session.add(goal)
             db.session.commit()
             return redirect(url_for('profile'))
@@ -168,23 +167,27 @@ def editGoal(id):
             flash('You cannot edit this post')
             redirect(url_for('profile'))
         else:
-            goals = user.getGoals() #Should do something with this?
-            form = GoalForm(obj = editableGoal)
-            form.populate_obj(editableGoal)
+            goals = user.getGoals()
+            oldGoal = Goal(title = editableGoal.title, timestamp = editableGoal.timestamp,
+                user_id = user.id, description = editableGoal.description,
+                youtubeURL = editableGoal.youtubeURL, order =  editableGoal.order)
+            form = GoalForm(obj = oldGoal)
+            form.populate_obj(editableGoal) #automatically mutates editableGoal
             #Change to add Goal instead of in profile
             if request.method == 'POST':
                 if form.validate():
-                    editableGoal.title = form.title.data
-                    editableGoal.description = form.description.data
-                    # editableGoal.youtubeURL = form.youtubeURL.data
-                    #Process the string (either search YouTube and reutnr first result or split and save)
-                    editableGoal.youtubeURL = str(form.youtubeURL.data.split('v=')[-1])
-                        
-                    if 'www.youtube' in form.youtubeURL.data:
+
+                    #Process the string (either search YouTube and return first result or split and save)
+                    print(oldGoal.timestamp)
+                    print(datetime.utcnow())
+                    print((datetime.utcnow() - oldGoal.timestamp).seconds / 60)
+                    if 'www.youtube' in form.youtubeURL.data: #user has inputted data
                         editableGoal.youtubeURL = str(form.youtubeURL.data.split('v=')[-1])
-                    else:
-                        # youtube = youtubeAPI for the first search result ID
-                        editableGoal.youtubeURL = "YinkbnaBgIk"
+                    elif oldGoal.title != form.title.data or ((datetime.utcnow() - oldGoal.timestamp).seconds / 60) > 5: #title of the goal has changed
+                        try:
+                            editableGoal.youtubeURL = suggestVideo(form.title.data, '', randint(0,9))
+                        except:
+                            editableGoal.youtubeURL = "YinkbnaBgIk"
 
                     db.session.commit()
                     return redirect(url_for('profile'))

@@ -3,6 +3,26 @@
   text-align: center;
 }
 
+.cardContainer .tooltiptext {
+    visibility: hidden;
+    width: 12%;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+ 
+    position: absolute;
+    z-index: 1;
+    top: 30%;
+    left: 45%;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.cardContainer:hover .tooltiptext {
+    visibility: visible;
+}
+
 .goalCard {
   Light Blue
   margin-left: 5%;

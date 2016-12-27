@@ -93,7 +93,6 @@ class Forismatic(object):
         else:
             return None
 
-
-f = Forismatic()
-q = f.get_quote()
-print(q.quote, q.author)
+# f = Forismatic()
+# q = f.get_quote()
+# print(q.quote, q.author)
