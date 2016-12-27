@@ -1,3 +1,6 @@
+#
+# Author: Kireet Agrawal, Pep Talk
+#
 from flask import render_template, flash, redirect, request, session, url_for, jsonify
 from app import app, db
 from .forms import LoginForm, SignupForm, AnonForm, AnonLogin, GoalForm
@@ -10,8 +13,6 @@ import urllib.request
 import urllib.parse
 import re
 from random import randint
-
-
 
 
 def suggestVideo(title, description, num):

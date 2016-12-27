@@ -1,3 +1,7 @@
+#
+# For Connection to Forismatic API to obtain quotes.
+# Working on search engine with tf-idf for quote suggestions.
+#
 from urllib.request import urlopen
 from urllib.parse import urlencode
 import json
