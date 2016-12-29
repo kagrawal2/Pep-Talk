@@ -278,6 +278,7 @@ def anonSignup():
         # count = session.query(func.count(AnonUser.id)).scalar()
         count = User.query.filter_by(firstname = 'anon').count() #TODO:// Speed Up Count()
         print('user')
+        print(count)
         anonId = generate_password_hash(str(count))
         print('user password')
 
