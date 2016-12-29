@@ -28,7 +28,4 @@ chardet==1.0.1
 gunicorn==19.6.0
 requests==2.12.1
 python-dateutil==2.4.2
-urllib==3.4
-re==2.2.1
-datetime==3.4
-random==2.2
+
