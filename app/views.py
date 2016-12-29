@@ -40,7 +40,9 @@ def suggestQuote(title, description, count=0):
     Using a quotes database, relationship between title, description : quote and author
     """
     quote = f.get_quote()
+    print('here')
     if quote is not None and len(quote.quote + quote.author) < 201:
+        print('quote found')
         return { 'q' : quote.quote, 'author' : quote.author }
     else:
         if count < 10:
