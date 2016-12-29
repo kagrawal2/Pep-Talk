@@ -19,14 +19,15 @@
       <nav class="navbar navbar-inverse">
         <div class="navbar-inner">
           <div class="container-fluid">
-            <ul class="nav pull-left">
+            <ul class="nav pull-left navbar-header">
               {% if 'email' in session %}
-              <li class="logo"><a href="{{ url_for('profile') }}"><h1>PepTalk</h1></a></li>
+              <li><a href="{{ url_for('profile') }}"><h2>PepTalk</h2></a></li>
               {% else %}
-              <li class="logo"><a href="{{ url_for('index') }}"><h1>PepTalk</h1></a></li>
+              <li><a href="{{ url_for('index') }}"><h2>PepTalk</h2></a></li>
               {% endif %}
             </ul>
-            <ul class="nav pull-right">
+            <ul style="display: inline-block;" class="nav pull-right">
+              <li><a href="{{ url_for('about') }}">About</a></li>
               {% if 'email' in session %}
               <li><a href="{{ url_for('profile') }}">Profile</a></li>
               <li><a href="{{ url_for('logout') }}">Log Out</a></li>
@@ -40,21 +41,36 @@
       </nav>
   </header>
 
+  <div class='content'>
+    <div class='content-inside'>
 
-  {% with messages = get_flashed_messages() %} 
-    {% if messages %}
-      {% for message in messages %}
-      <div class="flash">
-        {{ message }}
+        {% with messages = get_flashed_messages() %} 
+          {% if messages %}
+            {% for message in messages %}
+            <div class="flash">
+              {{ message }}
+            </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+   
+      <div class="container">
+        {% block content %}
+        {% endblock %}
       </div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
- 
-    <div class="container">
-      {% block content %}
-      {% endblock %}
+
+      <br>
     </div>
+  </div>
+
+  <footer class="footer">
+    <div style="display: inline">
+        <a class='linked-in-icon' target="_blank" href="https://www.linkedin.com/in/kireetagrawal"><img src="{{ url_for('static', filename='img/linked-in.ico') }}"/></a>
+        <a class='github-icon' target="_blank" href="https://github.com/kagrawal2"><img src="{{ url_for('static', filename='img/github-icon.ico') }}"/></a>
+
+        <div class="copyright">Created By Kireet Agrawal, 2016</div>
+    </div>
+  </footer>
 
   </body>
 </html>

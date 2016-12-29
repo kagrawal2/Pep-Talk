@@ -3,33 +3,34 @@
   
   <div class="container">
         <div class="row">
-            <div class="col-xs-5 col-md-5">
+            <div class="col-xs-6 col-md-6">
               {% include 'createGoal.html' %}
             </div>
-            <div class="col-xs-2 col-md-2">
+            <div class="col-xs-1 col-md-1">
             </div>
             <div class="col-xs-5 col-md-5">
-              <br>
-              <br>
                 <!-- <h4>{{ session['email'] }}</h4> -->
-                <h3>Welcome {{ user.firstname }}!</h3>
                     
                       {% if session['anon'] %}
-                        <p>
+                        <h4>
                         Your Anonymous ID is:
-                        </p>
-                        
+                        </h4>
                         <p style="font-size: 75%"><small>
-                        {{ user.lastname }} <!-- Storage of Anonymous ID CLick to Copy to clipboard with JS-->
+                        {{ user.lastname }} <!-- Storage of Anonymous ID Click to Copy to clipboard with JS-->
                         </small></p>
+                        <p>Please copy and save to login later</p>
+
+                      {% else %}
+                        <h3>Welcome {{ user.firstname }}!</h3>
                       {% endif %}
-                <br>
-                {% if dailyQuote %}
-                  <h4>{{ dailyQuote['q'] }}</h4>
+                      <br>
 
-                  <h5>{{ dailyQuote['author'] }}</h5>
+                      {% if dailyQuote %}
+                        <h4>{{ dailyQuote['q'] }}</h4>
 
-                {% endif %}
+                        <h5 style="text-align:right; padding: 5%" >{{ dailyQuote['author'] }}</h5>
+
+                      {% endif %}
             </div>
         </div>
   </div>
@@ -37,10 +38,12 @@
   </form>
 
   <div class="cardContainer" >
-    <span class="tooltiptext">Drag and Drop to reorder your Goals</span>
-    <h1> Your Goals </h1>
-  {% for goal in goals %}
-                <div class="goalCard" draggable="true">
+      <span class="tooltiptext">Drag and Drop to reorder your Goals</span>
+      <h1> Your Goals </h1>
+    <div class="goalContainer">
+      {% for goal in goals %}
+
+                <div class="goalCard goalCard{{ goal.id }}" draggable="true">
                   <div class= 'insideCard' id = "{{ goal.id }}">
                   
                     <h3> {{ goal.title }} </h3>
@@ -54,10 +57,11 @@
                       <button onclick= "location.href='{{ url_for('editGoal', id = goal.id ) }}';">Edit</button>
 
                       <button onclick= "location.href='{{ url_for('deleteGoal', id = goal.id ) }}';">Delete</button>
+
                     {% endif %}
                   
 
-                  <!-- Trigger/Open The Modal -->
+                  <!-- Open The Modal -->
                     <button id="Btn{{ goal.id }}" onclick="showModal({{ goal.id }}, 0)">More Info</button>
 
                    <!-- The Modal -->
@@ -65,7 +69,7 @@
                                           <!-- Modal content -->
                       <div class="modal-content">
                         <div class="modal-header">
-                          <span class="close{{ goal.id }} close">&times;</span>
+                          <span class="closeModal close{{ goal.id }}">&times;</span>
                           <h2>{{ goal.title }}</h2>
                         </div>
                         {% if goal.description %}
@@ -87,7 +91,8 @@
                   </div>
                 </div>
   
-  {% endfor %}
+      {% endfor %}
+    </div>
   </div>
 
 
@@ -118,11 +123,6 @@
           }
       }
     }
-
-
-    // function showDescription(text) {
-    //   alert(text);
-    // }
 
     var dragSrcEl = null;
 

@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="about index">
+    <h2>About</h2>
+    
+    <p>PepTalk is a MiniApp built with Flask, Python, JavaScript, HTML, CSS, & BootStrap and is deployed on Heroku with PostgreSQL.</p>
+    
+    <h4>Features</h4>
+    <ul>
+
+        <li>Login is custom built with abstraction for anonymous users</li>
+
+        <li>The Drag-and-Drop cards use javascript and AJAX to update order</li>
+
+        <li>Videos are only embedded on click, only the max 500kb image is rendered until then</li>
+
+        <li>Video suggestions come from YouTube's search engine</li>
+
+        <li>Quote suggestions are currently random (search engine suggestion is coming soon) from Forismatic</li>
+
+    </ul>
+    <br>
+    <br>
+        <p style="text-align:center">Thank you for checking PepTalk out!</p>
+        <p style="text-align:center">All code can be found on github below!</p>
+
+</div>
+
+{% endblock %}

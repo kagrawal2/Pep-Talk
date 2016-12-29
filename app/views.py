@@ -9,11 +9,15 @@ from .quoteManager import Forismatic
 from werkzeug import generate_password_hash
 
 from datetime import datetime
+import time
 import urllib.request
 import urllib.parse
 import re
 from random import randint
 
+
+"""Search Engine Suggestion methods: will be updated to youtube.py and quoteManager.py, once 
+custom search engines are implemented."""
 
 def suggestVideo(title, description, num):
     """
@@ -85,8 +89,6 @@ def getCurrentUser():
 @app.route('/profile', methods = ['GET', 'POST'])
 def profile():
     user = getCurrentUser()
-    if user == None:
-        return redirect(url_for('login'))
 
     if user is None:
         return redirect(url_for('login'))
@@ -151,7 +153,7 @@ def createGoal():
             db.session.commit()
             return redirect(url_for('profile'))
 
-        flash('There was an error in your goal')
+        flash('There was an error in creating your goal')
 
     return redirect(url_for('profile'))
 
@@ -198,13 +200,15 @@ def editGoal(id):
 
     return redirect(url_for('profile'))
 
-@app.route('/deleteGoal/<int:id>', methods = ['GET'])
+@app.route('/deleteGoal/<int:id>', methods = ['GET', 'POST'])
 def deleteGoal(id):
+    print(id)
     user = getCurrentUser()
     if user == None:
         return redirect(url_for('login'))
 
     editableGoal = Goal.query.filter_by(id = id).first()
+    print('deleted', id)
 
     if editableGoal != None:
         if editableGoal.user_id != user.id:
@@ -323,8 +327,10 @@ def logout():
     session.pop('anon', None)
     return redirect(url_for('index'))
 
-
-
+"""About Page"""
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 # @app.route('/login', methods=['GET', 'POST'])
 # def login():
