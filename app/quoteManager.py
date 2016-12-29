@@ -49,6 +49,9 @@ class Forismatic(object):
     Supports POST & GET methods, russian & english quotes
     
     """
+    def __str__(self):
+        return "Forismatic created"
+
 
     def __init__(self, method="POST", api_url='http://api.forismatic.com/api/1.0/'):
 
