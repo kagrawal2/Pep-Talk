@@ -288,7 +288,9 @@ def anonSignup():
             anonUser = User('anon', anonId, anonId + '@gmail.com', str(count))
             print('added user')
             db.session.add(anonUser)
+            print('add user status')
             db.session.commit()
+            print('commit')
 
         session['email'] = 'anon'
         session['anon'] = anonId
