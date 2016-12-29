@@ -25,9 +25,6 @@ sqlalchemy==1.0.5
 sqlparse==0.1.11
 Setuptools==23.1.0
 Pip==9.0.1
-Flask==0.8
-Jinja2==2.6
-Werkzeug==0.8.3
 certifi==14.5.14
 chardet==1.0.1
 distribute==0.6.24
