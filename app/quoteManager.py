@@ -6,7 +6,7 @@ from urllib.request import urlopen
 from urllib.parse import urlencode
 import json
 from datetime import datetime
-# from app import app, db
+from app import app, db
 
 
 class Quote(object):
