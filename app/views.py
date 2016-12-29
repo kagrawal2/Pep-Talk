@@ -274,24 +274,15 @@ def anonSignup():
 
     print('form get')
     if request.method == 'POST': #Must generate a limit based on request location (check if request is unique)
-        print('form posted')
         # count = session.query(func.count(AnonUser.id)).scalar()
         count = User.query.filter_by(firstname = 'anon').count() #TODO:// Speed Up Count()
-        print('user')
-        print(count)
         anonId = generate_password_hash(str(count))
-        print('user password')
-
         currAnonUser = User.query.filter_by(firstname = 'anon').filter_by(lastname = anonId).first()
-        print('check past')
 
         if currAnonUser is None:
             anonUser = User('anon', anonId, anonId + '@gmail.com', str(count))
-            print('added user')
             db.session.add(anonUser)
-            print('add user status')
             db.session.commit()
-            print('commit')
 
         session['email'] = 'anon'
         session['anon'] = anonId
