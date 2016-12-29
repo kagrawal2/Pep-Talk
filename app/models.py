@@ -9,7 +9,7 @@ class User(db.Model):
     firstname = db.Column(db.String(100))
     lastname = db.Column(db.String(100))
     email = db.Column(db.String(120), index = True, unique = True)
-    pwdhash = db.Column(db.String(54))
+    pwdhash = db.Column(db.String(100))
     goals = db.relationship('Goal', backref = 'author', lazy='dynamic')
 
     def __init__(self, firstname, lastname, email, password):
