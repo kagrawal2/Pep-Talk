@@ -230,17 +230,12 @@ def signup():
 
     form = SignupForm()
     anonForm = AnonForm()
-    print('posted form')
-    
-
     if request.method == 'POST':
         if not form.validate():
             return render_template('signup.html', form=form, anonForm=anonForm)
         else:
             newuser = User(form.firstname.data, form.lastname.data, form.email.data, form.password.data)
-            print('here')
             db.session.add(newuser)
-            print('success')
             db.session.commit()
 
             session['email'] = newuser.email.lower() #store current session for login
@@ -276,16 +271,22 @@ def anonSignup():
         if 'email' in session:
             return redirect(url_for('profile'))
 
+
+    print('form get')
     if request.method == 'POST': #Must generate a limit based on request location (check if request is unique)
-        
+        print('form posted')
         # count = session.query(func.count(AnonUser.id)).scalar()
         count = User.query.filter_by(firstname = 'anon').count() #TODO:// Speed Up Count()
+        print('user')
         anonId = generate_password_hash(str(count))
+        print('user password')
 
         currAnonUser = User.query.filter_by(firstname = 'anon').filter_by(lastname = anonId).first()
+        print('check past')
 
         if currAnonUser is None:
             anonUser = User('anon', anonId, anonId + '@gmail.com', str(count))
+            print('added user')
             db.session.add(anonUser)
             db.session.commit()
 
