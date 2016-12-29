@@ -92,13 +92,13 @@ class Forismatic(object):
         if response.getcode() == 200:
 
             # Decoding JSON and fill Quote, if HTTP responce is OK
-            try:
-                print('data was received')
-                retrieved_data = json.loads(response.readall().decode('utf-8'))
-                print(retrieved_data)
-                return Quote(data=retrieved_data)
-            except:
-                return None
+            # try:
+            print('data was received')
+            retrieved_data = json.loads(response.readall().decode('utf-8'))
+            print(retrieved_data)
+            return Quote(data=retrieved_data)
+            # except:
+            #     return None
         else:
             print('response returned none')
             return None
