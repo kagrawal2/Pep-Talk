@@ -48,7 +48,7 @@ def suggestQuote(title, description, count=0):
             print('returning quote')
             return { 'q' : quote.quote, 'author' : quote.author }
     else:
-        if count < 10:
+        if count < 4:
             count += 1
             return suggestQuote(title, description, count)
         else:
