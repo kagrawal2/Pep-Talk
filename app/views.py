@@ -230,13 +230,17 @@ def signup():
 
     form = SignupForm()
     anonForm = AnonForm()
+    print('posted form')
+    
 
     if request.method == 'POST':
         if not form.validate():
             return render_template('signup.html', form=form, anonForm=anonForm)
         else:
             newuser = User(form.firstname.data, form.lastname.data, form.email.data, form.password.data)
+            print('here')
             db.session.add(newuser)
+            print('success')
             db.session.commit()
 
             session['email'] = newuser.email.lower() #store current session for login
