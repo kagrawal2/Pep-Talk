@@ -94,7 +94,7 @@ class Forismatic(object):
             # Decoding JSON and fill Quote, if HTTP responce is OK
             # try:
             print('data was received')
-            retrieved_data = json.loads(response.readall().decode('utf-8'))
+            retrieved_data = json.loads(response.read().decode('utf-8'))
             print(retrieved_data)
             return Quote(data=retrieved_data)
             # except:
