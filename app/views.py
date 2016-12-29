@@ -9,7 +9,6 @@ from .quoteManager import Forismatic
 from werkzeug import generate_password_hash
 
 from datetime import datetime
-import time
 import urllib.request
 import urllib.parse
 import re
@@ -181,9 +180,6 @@ def editGoal(id):
                 if form.validate():
 
                     #Process the string (either search YouTube and return first result or split and save)
-                    print(oldGoal.timestamp)
-                    print(datetime.utcnow())
-                    print((datetime.utcnow() - oldGoal.timestamp).seconds / 60)
                     if 'www.youtube' in form.youtubeURL.data: #user has inputted data
                         editableGoal.youtubeURL = str(form.youtubeURL.data.split('v=')[-1])
                     elif oldGoal.title != form.title.data or ((datetime.utcnow() - oldGoal.timestamp).seconds / 60) > 5: #title of the goal has changed
