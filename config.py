@@ -1,5 +1,5 @@
 WTF_CRSF_ENABLE = True
-SECRET_KEY = 'impossible-to-know-pword'
+SECRET_KEY = 'impossible-to-know-pword' #Set as Heroku Environment variable during deployment
 
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
